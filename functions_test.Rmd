@@ -1,0 +1,65 @@
+---
+title: "FMC Daily Updates"
+author: "FMC"
+geometry: left=2cm,right=2cm,top=0.5cm,bottom=1cm
+output: pdf_document
+
+---
+
+```{r global-options, include=FALSE}
+
+# 1: libraries
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(CCAMLRGIS)
+library(ccamlrtools)
+library(knitr)
+library(pander) #Need to install pandoc on your computer too
+library(geosphere)
+
+# 2 clean the working space
+  rm(list=ls())
+
+# 3 Load functions source files ( ‘ ~ / functions ’ )
+  # check all files in the folder
+  func_files <- list.files(path = "functions", full.names = T, recursive = T)
+  # run all files listed as source
+  suppressMessages(lapply(func_files, source))
+  
+# 4 Set chunck options for the whole document here
+  # See str(knitr::opts_chunk$get()) for a list of default chunk options.
+opts_chunk$set(fig.width=8, fig.height=4, dpi=200,cache=FALSE,
+               highlight=F,echo=FALSE, warning=FALSE, message=FALSE)
+
+# 5 Set some pander options to format tables (limited options)
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('table.split.cells', Inf)
+panderOptions('keep.trailing.zeros', TRUE)
+
+# date_range <- as.Date(c(Sys.Date() - days(10), Sys.Date()))
+
+```
+
+```{r chunk name, results='asis'}
+
+ca_activities <- check_ca_activities(date_range)
+
+ca_all <- ca_activities$vessels_in_ca_all
+
+ca_detailed <- ca_activities$vms_mov_join %>% 
+  ungroup() %>% 
+  dplyr::mutate_if(is.POSIXt, function(x) {
+          format(x, "%d/%m/%Y %H:%M")
+        })
+
+```
+
+```{r vms-freq, results='asis'}
+
+vms_freq <- check_vms_frequency(ca_activities)
+
+
+```

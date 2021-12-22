@@ -1,0 +1,125 @@
+---
+title: "FMC Daily Updates"
+author: "FMC"
+geometry: left=2cm,right=2cm,top=0.5cm,bottom=1cm
+output: pdf_document
+
+---
+
+```{r global-options, include=FALSE}
+
+# 1: libraries
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(CCAMLRGIS)
+library(ccamlrtools)
+library(knitr)
+library(pander) #Need to install pandoc on your computer too
+library(geosphere)
+
+# 2 clean the working space
+  rm(list=ls())
+
+# 3 Load functions source files ( ‘ ~ / functions ’ )
+  # check all files in the folder
+  func_files <- list.files(path = "functions", full.names = T, recursive = T)
+  # run all files listed as source
+  suppressMessages(lapply(func_files, source))
+  
+# 4 Set chunck options for the whole document here
+  # See str(knitr::opts_chunk$get()) for a list of default chunk options.
+opts_chunk$set(fig.width=8, fig.height=4, dpi=200,cache=FALSE,
+               highlight=F,echo=FALSE, warning=FALSE, message=FALSE)
+
+# 5 Set some pander options to format tables (limited options)
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('table.split.cells', Inf)
+panderOptions('keep.trailing.zeros', TRUE)
+
+# date_range <- as.Date(c(Sys.Date() - days(10), Sys.Date()))
+
+```
+FMC daily report for `r Sys.Date()`
+
+```{r fisheries, results='asis'}
+
+
+#Get all fisheries and separate by reporting period type
+mt <- load_master_table() %>% 
+  filter(CSN_Start_Date <= Sys.Date() - days(1), CSN_End_Date >= Sys.Date() - days(1))
+
+#Get fisheries and areas data
+fsh <- ccamlrtools::queryccamlr(query = "SELECT * FROM FISHERY", db = "ccamlr", asis = F)
+geographic_areas <- load_geographic_areas()
+
+#Daily reports
+daily_report_fsr <- mt %>% 
+  filter(FSR_Reporting_Period_Type == "day") %>% 
+  select(FSR_ID, FSR_Name, FSH_ID) %>% 
+  unique()
+
+#Which areas are included in those fisheries
+daily_areas <- daily_report_fsr %>%
+  left_join(fsh) %>%
+  left_join(geographic_areas) %>%
+  select(GAR_ID, GAR_Short_Label) %>%
+  unique()
+
+#How many vessels present
+
+#How many are authorized / not authorized to fish 
+
+#How many yesterday vs how many today
+
+#Who entered
+
+#Who left
+
+
+
+
+#5 days
+five_day_report_fsr <- mt %>% 
+  filter(FSR_Reporting_Period_Type == "5_day") %>% 
+  select(FSR_ID, FSR_Name) %>% 
+  unique()
+
+#10 days
+ten_day_report_fsr <- mt %>% 
+  filter(FSR_Reporting_Period_Type == "10_day") %>% 
+  select(FSR_ID, FSR_Name) %>% 
+  unique()
+
+# -	Daily reporting fisheries:
+# o	CCAMLR Area Map + total vessels present/ASD
+# o	Vessels entering x vessels existing
+# o	Last fishery notice issued
+# o	Next notice expected
+# o	CE reports due today (Area x Vessel)
+# 
+# -	5 days reporting fisheries:
+# o	CCAMLR Area Map + total vessels present/ASD
+# o	Vessels entering x vessels exiting last 5 days
+# o	Last report issued
+# o	Next report expected
+# o	CE reports due today (Area x Vessel x Status)
+# 
+# -	10 days reporting fisheries:
+# o	CCAMLR Area Map + total vessels present/ASD
+# o	Vessels entering x vessels exiting last 10 days
+# o	Last report issued
+# o	Next report expected
+# o	CE reports due today (Area x Vessel x status)
+
+
+```
+
+```{r vms-freq, results='asis'}
+
+print("Testing text")
+
+
+```

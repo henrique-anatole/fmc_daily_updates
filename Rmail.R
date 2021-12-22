@@ -1,8 +1,13 @@
 
 library(mailR) #needs Java 64bit (https://www.java.com/en/download/manual.jsp) and rJava library
 
-Attachment="\\\\lena/CCAMLR/Science/Projects/CCAML_R/CCAML_R.png"
-MailTo=c('henrique.anatole@ccamlr.org')
+#A code to run the markdown file and generate the pdf
+
+
+MailFrom = 'henrique.anatole@ccamlr.org'
+Attachment="C:/R_projects/fmc_daily_updates/saved_reports/FMC_daily_updates.pdf"
+MailTo=c('henrique.anatole@ccamlr.org',
+         'claire.vanwerven@ccamlr.org')
 
 send.mail(from=MailFrom,
           to=MailTo,
@@ -11,5 +16,6 @@ send.mail(from=MailFrom,
           attach.files = Attachment,
           smtp=list(host.name = "Mail.ccamlr.org", port = 25),
           send=T)
+
 
 
